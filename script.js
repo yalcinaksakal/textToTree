@@ -19,7 +19,7 @@ class Tree {
     preliminaries: [],
     materials: [],
     test: null,
-    liveContent: null,
+    liveContent: { link: "", date: "", access: "" },
   };
   constructor(title) {
     this.#title = title;
@@ -58,9 +58,9 @@ class Tree {
   #getTreeString(node, spaceCount = 0) {
     let str = "\n";
     node.children.forEach(child => {
-      str += `${" ".repeat(spaceCount)}${child.#title}${this.#getTreeString(
+      str += `${"_".repeat(spaceCount)}${child.#title}${this.#getTreeString(
         child,
-        spaceCount
+        spaceCount + 1
       )}`;
     });
     return str;
@@ -104,7 +104,6 @@ let currentParent = 0;
 let prevNode = pathTree;
 try {
   textArray.forEach((item, index) => {
-    console.log(index);
     if (item.trim() === "") return;
     const indent = item.length - item.trimStart().length;
     if (indent > currentParent + 1) throw new Error(`${index + 1}`);
@@ -118,11 +117,18 @@ try {
       }
     }
     if (indent === currentParent)
-      prevNode = parents[currentParent].createChildNode(item);
+      prevNode = parents[currentParent].createChildNode(item.trimStart());
   });
 } catch (err) {
   console.log("Error at line:", err.message);
 }
 
-console.log(pathTree.print());
-console.log(pathTree.findNodeByTitle("A.C.A.B"));
+document.getElementById("1").innerText = pathTree.print();
+const searchedNode = pathTree.findNodeByTitle("A.C.B");
+searchedNode.content = {
+  preliminaries: ["1", "2", "3"],
+  materials: ["a", "b", "c"],
+  test: "x",
+  liveContent: { link: "c", date: "121", access: "12223123" },
+};
+console.log(searchedNode);
