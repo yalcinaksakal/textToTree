@@ -1,0 +1,20 @@
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.text {
+  width: 95%;
+  height: 40vh;
+  margin: 0.5rem 0;
+  border: none;
+  border-radius: 5px;
+  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+  background: rgb(228, 238, 248);
+  resize: none;
+  outline: none;
+  padding: 0.5rem;
+}
