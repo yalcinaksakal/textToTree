@@ -21,8 +21,8 @@ class Tree {
     test: null,
     liveContent: null,
   };
-  constructor(content) {
-    this.#content = { ...content };
+  constructor(title) {
+    this.#title = title;
   }
   set content(newContent) {
     this.#content = { ...newContent };
@@ -48,19 +48,19 @@ class Tree {
     return this.#children.size;
   }
 
-  createChildNode(content) {
-    const newNode = new Tree(content);
+  createChildNode(title) {
+    const newNode = new Tree(title);
     this.#children.set(newNode.identifier, newNode);
-    newNode.parentNode = this;
+    newNode.#parent = this;
     return newNode;
   }
 
   #getTreeString(node, spaceCount = 0) {
     let str = "\n";
     node.children.forEach(child => {
-      str += `${" ".repeat(spaceCount)}${child.name}${this.#getTreeString(
+      str += `${" ".repeat(spaceCount)}${child.#title}${this.#getTreeString(
         child,
-        spaceCount + 2
+        spaceCount
       )}`;
     });
     return str;
@@ -72,7 +72,7 @@ class Tree {
   }
 
   print() {
-    return `${this.name}${this.#getTreeString(this, 2)}`;
+    return `${this.#title}${this.#getTreeString(this, 1)}`;
   }
 
   //traverse all leaves of "this" and run cb function, Depth first search
@@ -83,11 +83,11 @@ class Tree {
   }
 
   //find by ID
-  findNodeByID(ID) {
+  findNodeByTitle(title) {
     let foundNode = null;
-    if (this.identifier === ID) return this;
+    if (this.#title === title) return this;
     this.traverse(node => {
-      if (node.identifier === ID) {
+      if (node.#title === title) {
         foundNode = node;
         return foundNode;
       }
@@ -96,45 +96,33 @@ class Tree {
   }
 }
 
-const getSampleTree = () => {
-  const sampleTree = new Tree("Root");
-  sampleTree
-    .createChildNode("Level 1")
-    .parentNode.createChildNode("Level 1")
-    .parentNode.createChildNode("Level 1")
-    .parentNode.createChildNode("Level 1")
-    .parentNode.createChildNode("Level 1")
-    .createChildNode("Level 2")
-    .createChildNode("Level 3")
-    .parentNode.createChildNode("Level 3")
-    .createChildNode("Level 4")
-    .parentNode.parentNode.createChildNode("Level 3")
-    .createChildNode("Level 4")
-    .createChildNode("Level 5")
-    .createChildNode("Level 6")
-    .parentNode.createChildNode("Level 6")
-    .parentNode.createChildNode("Level 6")
-    .createChildNode("Level 7")
-    .parentNode.createChildNode("Level 7")
-    .parentNode.parentNode.createChildNode("Level 6")
-    .parentNode.createChildNode("Level 6")
-    .parentNode.parentNode.parentNode.parentNode.parentNode.createChildNode(
-      "Level 2"
-    )
-    .parentNode.createChildNode("Level 2")
-    .createChildNode("Level 3")
-    .parentNode.createChildNode("Level 3")
-    .parentNode.createChildNode("Level 3");
-  return sampleTree;
-};
-
 const textArray = document.querySelector(".text").value.split("\n");
 
-const pathTree = new Tree({
-  preliminaries: [],
-  materials: [],
-  test: null,
-  liveContent: null,
-});
-console.log(pathTree);
-// const nodesArray = textArray.console.log(textArray);
+const pathTree = new Tree("Path");
+const parents = [pathTree];
+let currentParent = 0;
+let prevNode = pathTree;
+try {
+  textArray.forEach((item, index) => {
+    console.log(index);
+    if (item.trim() === "") return;
+    const indent = item.length - item.trimStart().length;
+    if (indent > currentParent + 1) throw new Error(`${index + 1}`);
+    if (indent === currentParent + 1) {
+      parents.push(prevNode);
+      currentParent++;
+    } else if (indent < currentParent) {
+      while (currentParent !== indent) {
+        parents.push(prevNode);
+        currentParent--;
+      }
+    }
+    if (indent === currentParent)
+      prevNode = parents[currentParent].createChildNode(item);
+  });
+} catch (err) {
+  console.log("Error at line:", err.message);
+}
+
+console.log(pathTree.print());
+console.log(pathTree.findNodeByTitle("A.C.A.B"));
