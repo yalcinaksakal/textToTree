@@ -14,6 +14,7 @@ class Tree {
   #children = new Map();
   #parent = null;
   #id = uniqueId();
+  #title = "";
   #content = {
     preliminaries: [],
     materials: [],
@@ -127,5 +128,13 @@ const getSampleTree = () => {
   return sampleTree;
 };
 
-const x = document.querySelector(".text");
-console.log(x.value.split("\n"));
+const textArray = document.querySelector(".text").value.split("\n");
+
+const pathTree = new Tree({
+  preliminaries: [],
+  materials: [],
+  test: null,
+  liveContent: null,
+});
+console.log(pathTree);
+// const nodesArray = textArray.console.log(textArray);
